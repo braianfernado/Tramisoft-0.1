@@ -35,7 +35,7 @@
         <!-- Sidebar Holder -->
         <nav id="sidebar">
             <div class="sidebar-header" style="color">
-                <img src="https://www.ge2.co/wp-content/uploads/2018/05/administrador.png" class="rounded" alt="Cinque Terre"
+                <img src="http://nutricionrenal.org/img/registro.png" class="rounded" alt="Cinque Terre"
                     width="100" height="100" style="margin-left: 40px">
                 <h4 style="padding-top:5px;" align="center" class="container">Bienvenido {{
                             auth()->user()->nombreEmp }}</h4>
@@ -46,7 +46,7 @@
                 <p>Gestion de Tramites</p>
 
                 <li class="active">
-                    <a href="#homeSubmenu" style="padding-left: 10px"><i class="fas fa-home"></i> Inicio</a>
+                    <a href="{{ route('empleado.inicioinfo-inicio') }}" style="padding-left: 10px"><i class="fas fa-home"></i> Inicio</a>
 
                 </li>
                  <li>

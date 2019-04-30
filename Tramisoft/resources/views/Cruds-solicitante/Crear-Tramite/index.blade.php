@@ -91,10 +91,13 @@
                     </div>
                 </div>
                 
+                
             </div>
         </div>
     </div>
     <br>
+    <div id="des"></div>
+ 
 
     <div class="col-xs-12 col-sm-12 col-md-12">
         <div class="form-group">
@@ -104,7 +107,7 @@
     </div>
 
     <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-        <button type="submit" class="btn btn-outline-success" style="float: left;"><i class="fas fa-save"></i> Guardar</button>
+        <button type="submit" class="btn btn-outline-success" style="float: left;"><i class="fas fa-save"></i> Siguiente</button>
     </div>
 
 

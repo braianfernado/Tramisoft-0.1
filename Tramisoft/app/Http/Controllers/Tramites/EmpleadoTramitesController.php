@@ -26,6 +26,11 @@ class EmpleadoTramitesController extends Controller
     {
         $this->middleware('auth:empleado');
     }
+
+    public function inicio()
+    {
+        return view('Cruds-empleado.Inicio.infoindex');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -34,7 +39,7 @@ class EmpleadoTramitesController extends Controller
     public function index(){
 
         $idE=auth()->user()->id;
-        $tramites = Tramite::where('idEmpleado',$idE)->orderBy('id', 'asc')->paginate(5);
+        $tramites = Tramite::where('idEmpleado',$idE)->orderBy('id', 'Desc')->paginate(5);
         $empleados= Empleado::all();
         $segui= Seguimiento::all();
 

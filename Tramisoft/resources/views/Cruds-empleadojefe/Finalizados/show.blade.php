@@ -64,9 +64,26 @@
 
 
 <div class="card" style=" border: black 1px solid;">
-                <a class="card-header" style="background-color:rgb(63, 105, 96);">
-                    <div class="titulodatos">Empleado asignado</div>
-</a>
+
+<div class="card-header" style="background-color:rgb(63, 105, 96);">
+
+                <div> 
+
+            <table class="table table-bordered" style="border: 0; margin:0px">
+                <tr>
+                    <td style="float: left; border:0;">
+                        <h5 class="titulodatos">Empleado Asignado</h5> 
+                    </td>
+                    <td style="float: right; border:0;">
+                        <a class="btn btn-warning btn-sm" style="float: right" href="{{ route('empleadojefe.reasignar-empleados' , $Tramite->id)}}" method="POST" >
+                        <i class="fas fa-plus-square"></i> Reasignar Otro Empleado</a>
+                    </td>
+                </tr>
+            </table>
+        
+ 
+            </div>
+                </div>
                 <div class="card-body">
                     <table class="table table-bordered">
 
@@ -184,7 +201,9 @@
             </div> 
             <div class="flecha-derecha"></div> 
             <img src="/img/epa.png" alt="" class="foto" width="40px" height="40px"> 
-           <div class="fecha">{{ $Respuesta->nombre }}  {{ $Respuesta->created_at }}</div>  
+           <div class="fecha">{{ $Respuesta->nombre }} ({{
+                                                $Respuesta->created_at->format('Y-M-d') }}) Hora: ({{
+                                                $Respuesta->created_at->format('H:i:s') }})</div>  
            </div>
 
                 @else 
@@ -195,7 +214,9 @@
             <div class="contenido"> 
                 {{ $Respuesta->comentario }} 
             </div> 
-            <div class="fecha">{{ $Respuesta->nombre }}  {{ $Respuesta->created_at }} </div> 
+            <div class="fecha">{{ $Respuesta->nombre }} ({{
+                                                $Respuesta->created_at->format('Y-M-d') }}) Hora: ({{
+                                                $Respuesta->created_at->format('H:i:s') }}) </div> 
              
                 
                  @endif

@@ -52,21 +52,35 @@
          @foreach ($TramitesD as $Tramite)
 
   <div class="card " style=" border: black 1px solid;">
-  <div class="card-header" style="background-color:rgb(34, 66, 59); ">
-  <p style="color:white;">Nombre del tramite:&nbsp;<strong>{{ $Tramite->nombreCatalogo }}</strong></p>
-  </div>
-  <div class="card-body" style="background-color:rgb(236, 236, 236);">
-    <p >Nombre del Solicitante:&nbsp;<strong>{{ $Tramite->nombreSolicitante }} {{ $Tramite->apellido }}</strong></p>
-    <p>Numero del ID:&nbsp;{{ $Tramite->id }} </p>
 
-    <p class="card-title">Descripcion:&nbsp;{{ $Tramite->descripcionCatalogo }}</p>              
-  </div>
+
   <div class="card-footer text-muted" style="background-color:rgb(34, 66, 59);">
 
 <div class="row">
   <div class="column">
-    <p style="color:white;">  {{ $Tramite->created_at }} <strong class="mostrar" style="color:cyan;">Hora</strong> {{ $Tramite->created_at }}</p>
+      <p style="color:white;">Nombre del tramite:&nbsp;<strong>{{ $Tramite->nombreCatalogo }}</strong></p>
     <p> </p>
+  </div>
+  <div class="column" >
+   <p style="text-align: right;" ><a class="btn btn-outline-secondary"   href="{{ route('empleadojefe.ReasignarDependencia', $Tramite->id)}}"><i class="fas fa-eye"></i>Reasignar Dependencia</a> </p>
+  </div>
+</div> 
+   
+  </div>
+
+
+  <div class="card-body" style="background-color:rgb(236, 236, 236);">
+    <p >Nombre del Solicitante:&nbsp;<strong>{{ $Tramite->nombreSolicitante }} {{ $Tramite->apellido }}</strong></p>
+    <p>Numero del ID:&nbsp;{{ $Tramite->id }} </p>
+
+    <p class="card-title">Descripcion:&nbsp;{{ $Tramite->descripcionTramite }}</p>              
+  </div>
+
+  <div class="card-footer text-muted" style="background-color:rgb(34, 66, 59);">
+
+<div class="row">
+  <div class="column">
+  <p style="color:white;"> {{ Carbon\Carbon::parse($Tramite->created_at)->format('M-d-Y') }} -<strong class="mostrar" style="color:cyan;">Hora :</strong>{{ Carbon\Carbon::parse($Tramite->created_at)->format('H:i:s') }}</p>
   </div>
   <div class="column" >
    <p style="text-align: right;" ><a class="btn btn-outline-secondary"   href="{{ route('empleadojefe.empleadojefe-ver-Pendiente', $Tramite->id)}} "><i class="fas fa-eye"></i> Atender tramite</a> </p>

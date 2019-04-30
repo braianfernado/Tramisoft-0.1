@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tramites;
 
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -16,14 +17,29 @@ use App\Documentacion;
 use Storage;
 use DB;
 
+use Carbon\Carbon;
+
+
 
 
 class EmpleadoJefeTramiteController extends Controller
 {
 
+    public function byDependencia($id){
+
+        return CatalogoTramite::where('idDependencia', $id)->get();
+    }
+
+
+
         public function __construct()
     {
         $this->middleware('auth:empleadojefe');
+    }
+
+    public function inicio()
+    {
+        return view('Cruds-EmpleadoJefe.Inicio.infoindex');
     }
     /**
      * Display a listing of the resource.
@@ -44,7 +60,7 @@ class EmpleadoJefeTramiteController extends Controller
            ->select('tramites.*','catalogo_tramites.nombreCatalogo','catalogo_tramites.descripcionCatalogo','dependencias.nombreDependecia','solicitantes.nombreSolicitante','solicitantes.apellido')
            ->where('dependencias.id',$idE)
            ->where('seguimientos.EstadoTramite','Finalizado')
-           ->orderBy('dependencias.id', 'asc')
+           ->orderBy('tramites.id', 'asc')
            ->paginate(5); 
     
        
@@ -73,10 +89,10 @@ class EmpleadoJefeTramiteController extends Controller
             ->select('tramites.*','catalogo_tramites.nombreCatalogo','catalogo_tramites.descripcionCatalogo','dependencias.nombreDependecia','solicitantes.nombreSolicitante','solicitantes.apellido')
             ->where('dependencias.id',$idE)
             ->where('seguimientos.EstadoTramite','Sin Asignar')
-            ->orderBy('dependencias.id', 'asc')
+            ->orderBy('tramites.id', 'DESC')
             ->paginate(5); 
      
-        
+
         return view('Cruds-EmpleadoJefe.Pendiente.index',compact('TramitesD', 'empleados', 'segui'))
         ->with('i', (request()->input('page', 1) - 1) * 5);
     }
@@ -88,7 +104,7 @@ class EmpleadoJefeTramiteController extends Controller
      $Documento=Documentacion::where('idTramite',$id)->get();
 
 
- return view('Cruds-empleadojefe.Tramites.showDoc',compact('Documento'));
+ return view('Cruds-empleadojefe.Tramites.showDoc',compact('Documento' , 'id'));
 
 }
 
@@ -151,7 +167,7 @@ public function descarga($id)
            ->where('dependencias.id',$idE)
            ->where('seguimientos.EstadoTramite','Proceso')
            ->orwhere('seguimientos.EstadoTramite','Revicion')
-           ->orderBy('dependencias.id', 'asc')
+           ->orderBy('dependencias.id', 'DESC')
            ->paginate(5); 
     
        
@@ -308,6 +324,19 @@ public function descarga($id)
         
     }
 
+  
+
+
+        public function reasignarDependencia($id){
+
+     
+        $dependencias= Dependencia::all();
+        $catalogo= CatalogoTramite::all();
+       
+         return view('Cruds-empleadojefe.Tramites.index', compact('dependencias','catalogo','id'));
+    }
+
+
     public function reasignar_empleado(Request $request, $id){
 
         Tramite::find($id)->update([
@@ -365,7 +394,43 @@ public function descarga($id)
 
 
 
+
     }
+
+
+     public function DependenciaDepen(Request $request, $id){
+
+
+            Tramite::find($id)->update([
+           'idCatalogoTramite' => $request->get('idCatalogoTramite'),
+          
+       ]);
+
+ $idE=auth()->user()->idDependencia;
+        $empleados= Empleado::all();
+         $segui= Seguimiento::all();
+ 
+         $TramitesD = DB::table('dependencias','tramites','solicitantes','seguimientos')
+            ->join('catalogo_tramites', 'dependencias.id', '=', 'catalogo_tramites.idDependencia')
+            ->join('tramites', 'catalogo_tramites.id', '=', 'tramites.idCatalogoTramite')
+            ->join('solicitantes', 'tramites.idSolicitante', '=', 'solicitantes.id')
+            ->join('seguimientos', 'tramites.id', '=', 'seguimientos.idTramite')
+            ->select('tramites.*','catalogo_tramites.nombreCatalogo','catalogo_tramites.descripcionCatalogo','dependencias.nombreDependecia','solicitantes.nombreSolicitante','solicitantes.apellido')
+            ->where('dependencias.id',$idE)
+            ->where('seguimientos.EstadoTramite','Sin Asignar')
+            ->orderBy('dependencias.id', 'desc')
+            ->paginate(5); 
+     
+        
+        return view('Cruds-EmpleadoJefe.Pendiente.index',compact('TramitesD', 'empleados', 'segui'))
+        ->with('i', (request()->input('page', 1) - 1) * 5);
+
+
+
+    }
+
+
+
 
        public function showObservaviones($id){
 

@@ -16,13 +16,9 @@ use App\CatalogoTramite;
 use App\Solicitante;
 use App\Doc_Catalogo;
 use App\Documentacion;
+use App\Observacion;
 use Storage;
 use DB;
-
-
-
-
-
 
 
 class SolicitanteTramiteController extends Controller
@@ -32,10 +28,19 @@ class SolicitanteTramiteController extends Controller
 
         return CatalogoTramite::where('idDependencia', $id)->get();
     }
+    public function byCatalogo($id){
+
+        return CatalogoTramite::where('id', $id)->get();
+    }
 
     public function __construct()
     {
         $this->middleware('auth:solicitante');
+    }
+
+    public function inicio()
+    {
+        return view('Cruds-Solicitante.Inicio.infoindex');
     }
     /**
      * Display a listing of the resource.
@@ -63,18 +68,27 @@ class SolicitanteTramiteController extends Controller
         $crear=Seguimiento::where('idTramite',$id)->value('id');
         $Respuestas=Respuestaseguimiento::where('idSeguimiento',$crear)->get();
         $Tramite=Tramite::find($id);
-        $Segui=Seguimiento::where('idTramite',$id)->value('EstadoTramite');
+        $Segui=Seguimiento::where('idTramite',$id)->first();
         $Documento=Documentacion::where('idTramite',$id)->get();
+      $Observa=Observacion::where('idSeguimiento',$Segui->id)->get();
+     $observar=$Observa->last();
 
 
 
+      $encontrado=false;
+           if($Tramite->idEmpleado == null){
+              $encontrado=true;
+       }
 
-        $encontrado=false;
-            if($Tramite->idEmpleado == null){
-               $encontrado=true;
-        }
 
-        return view('Cruds-solicitante.Tramites-Solicitante.show',compact('Tramite','Segui','Respuestas', 'encontrado','Documento'));
+
+         $encontrado2=false;
+         
+            if($observar == null){
+                $encontrado2=true;
+            }
+
+     return view('Cruds-solicitante.Tramites-Solicitante.show',compact('Tramite','Segui','Respuestas', 'encontrado','Documento','encontrado2','observar'));
 
     }
 
@@ -84,7 +98,9 @@ class SolicitanteTramiteController extends Controller
      $Documento=Documentacion::where('idTramite',$id)->get();
 
 
- return view('Cruds-solicitante.Tramites-Solicitante.showDoc',compact('Documento'));
+ return view('Cruds-solicitante.Tramites-Solicitante.showDoc',compact('Documento', 'id'));
+
+
 
 }
 
@@ -140,16 +156,14 @@ class SolicitanteTramiteController extends Controller
         $tramite->idEmpleado = null;
         $tramite->idCatalogoTramite=$request->get('idCatalogoTramite');
         $tramite->descripcionTramite=$request->input('descripcion');
-        $tramite->save();
+       $tramite->save();
 
         
-
-
 
         $segumiento = new Seguimiento;
         $segumiento->idTramite = $tramite->id;
         $segumiento->EstadoTramite = "Sin Asignar";
-        $segumiento->save(); 
+       $segumiento->save(); 
 
 
  
@@ -162,9 +176,9 @@ class SolicitanteTramiteController extends Controller
         $nose= Tramite::where('tramites.id', $Docu)->value('idCatalogoTramite');
        $nose2= Doc_Catalogo::where('doc__catalogos.idCatalogoTramite', $nose)->get();
 
-       
+     
 
-    return redirect()->route('solicitante.solicitante-Doc',compact('nose2','Docu'));
+    return redirect()->route('solicitante.solicitante-Doc',compact('nose2','Docu','tramite','segumiento'));
         
     }
 
@@ -205,9 +219,18 @@ public function Document(Request $request, $id){
 
 
 
+  
+
+
+
+
 for ($i = 0; $i < $num->numeroDocumentos; $i++) {
 
 
+
+         
+          if ($request->file("Documento$i") != null){
+               
 
         $Documen = new Documentacion;
         $Documen->idTramite = $id;
@@ -215,29 +238,71 @@ for ($i = 0; $i < $num->numeroDocumentos; $i++) {
         $Documen->nombreDocumento = Storage::disk('archivos')->put('archivos', $request->file("Documento$i"));
         $Documen->save(); 
 
+             
+            }
+
+     
 
 }
 
 
-//if ($request->hasFlie('Documento0')) {
-    
-
-    //$file= $request->file('Documento0');
-    //$name= $file->getClientOriginaName();
-  //  return $request;
-//}
-
-//return $request->file('Documento0');
 
       
-      $tramites = Tramite::where('idSolicitante',auth()->user()->id)->orderBy('id', 'DESC')->paginate(5);
+     $tramites = Tramite::where('idSolicitante',auth()->user()->id)->orderBy('id', 'DESC')->paginate(5);
      $empleados= Empleado::all();
      $segui= Seguimiento::all();
 
     return redirect()->route('solicitante.solicitante-index',compact('tramites', 'empleados', 'segui'))
-        ->with('i', (request()->input('page', 1) - 1) * 5);
+       ->with('i', (request()->input('page', 1) - 1) * 5);
 
 
+    }
+
+
+    public function Documentoagregar(Request $request, $id){
+        
+
+   
+     $trami= Tramite::where('tramites.id', $id)->first();
+
+     $num= CatalogoTramite::where('id',  $trami->idCatalogoTramite)->first();
+
+    $nombrear=Doc_Catalogo::where('idCatalogoTramite',  $num->id)->get();
+
+
+
+        $Documen = new Documentacion;
+        $Documen->idTramite = $id;
+        $Documen->nombrearchivo = $request->input("nombrearchivo");
+        $Documen->nombreDocumento = Storage::disk('archivos')->put('archivos', $request->file("Documento"));
+        $Documen->save(); 
+
+
+
+
+     $Documento=Documentacion::where('idTramite',$id)->get();
+
+
+ return view('Cruds-solicitante.Tramites-Solicitante.showDoc',compact('Documento', 'id'))->with("Su documento se agrego correectamente");
+
+
+
+
+    }
+
+
+
+
+
+     public function showObservaviones($id){
+
+         $Tramite=Tramite::find($id);
+         $Segui=Seguimiento::where('idTramite',$id)->first();
+         $Observa=Observacion::where('idSeguimiento',$Segui->id)->orderBy('id', 'des')->paginate(5);
+
+
+
+       return view('Cruds-solicitante.Tramites-Solicitante.observaciones',compact('Observa')) ->with('i', (request()->input('page', 1) - 1) * 5);;
     }
 
 
